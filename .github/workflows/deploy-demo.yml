@@ -26,52 +26,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Install gifsicle for GIF creation
-        run: sudo apt-get update && sudo apt-get install -y gifsicle
-
       - name: Build (library + demo + CLI)
         run: npm run build --if-present
-
-      - name: Generate README screenshots
-        run: |
-          echo "Running screenshot generation..."
-          npm run readme:screenshots
-          echo "Screenshots generated. Contents of .playwright-mcp:"
-          ls -la .playwright-mcp/ || echo "No .playwright-mcp directory"
-
-      - name: Generate README slideshow
-        run: |
-          echo "Running slideshow generation..."
-          npm run readme:slideshow -- --src .playwright-mcp --cycle-themes --repeat 2
-          echo "Slideshow generation complete. Checking assets:"
-          ls -la assets/ || echo "No assets directory"
-
-      - name: Copy GIF to demo folder
-        run: |
-          if [ -f "assets/readme-slideshow.gif" ]; then
-            cp assets/readme-slideshow.gif dist/demo/
-            echo "GIF copied to dist/demo/"
-          else
-            echo "GIF not found in assets/"
-          fi
-
-      - name: Commit generated assets
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add assets/readme-slideshow.gif assets/readme-screenshots/ || true
-          git commit -m "docs: update README slideshow and screenshots [skip ci]" || echo "No changes to commit"
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify demo output
         run: |
           echo "Contents of dist/demo:" && ls -la dist/demo || true
-          echo "Generated assets:" && ls -la assets/ || true
 
       - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v4
