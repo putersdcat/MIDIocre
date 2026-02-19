@@ -186,9 +186,14 @@ export class Midiocre {
 
   // -- Transport API ---------------------------------------------------------
 
-  play(): void {
+  async play(): Promise<void> {
     if (this.ctx.state === 'suspended') {
-      this.ctx.resume();
+      // On iOS Safari, resume() returns a Promise that must be awaited
+      try {
+        await this.ctx.resume();
+      } catch (err) {
+        console.warn('AudioContext resume failed:', err);
+      }
     }
     this.transport.play();
   }

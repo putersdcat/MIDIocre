@@ -653,8 +653,8 @@ async function init(): Promise<void> {
 
   // -- Event handlers --
 
-  btnPlayPause.addEventListener('click', () => {
-    if (isPlaying) player.pause(); else player.play();
+  btnPlayPause.addEventListener('click', async () => {
+    if (isPlaying) player.pause(); else await player.play();
   });
   btnStop.addEventListener('click', () => player.stop());
 
@@ -691,7 +691,7 @@ async function init(): Promise<void> {
       // Auto-play the next track if we were playing
       if (wasPlaying) {
         // Small delay for MIDI load to complete before playing
-        setTimeout(() => player.play(), 200);
+        setTimeout(async () => await player.play(), 200);
       }
     }
   });
