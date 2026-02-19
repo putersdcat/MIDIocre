@@ -6,9 +6,9 @@ A standalone, high-performance, browser-first MIDI playback library with SoundFo
 
 Note: this project was prompted into existence in about two hours to support another project that I keep intentionally dependency‑free — my own libs were a pass ;-).
 
-[Live demo (GitHub Pages) — https://<YOUR_GITHUB_USERNAME>.github.io/MIDIocre/](https://<YOUR_GITHUB_USERNAME>.github.io/MIDIocre/)
+[Live demo (GitHub Pages) — https://putersdcat.github.io/MIDIocre/](https://putersdcat.github.io/MIDIocre/)
 
-[![Midiocre demo screenshot](midiocrepack-piano.png)](https://<YOUR_GITHUB_USERNAME>.github.io/MIDIocre/)
+[![Midiocre demo screenshot](midiocrepack-piano.png)](https://putersdcat.github.io/MIDIocre/)
 
 The demo is published automatically by the .github/workflows/deploy-demo.yml workflow.
 
