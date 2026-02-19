@@ -1,0 +1,25 @@
+{
+  "sf2Path": "/SoundFonts",
+  "midiPath": "/DemoMidiFiles",
+  "sf2Files": [
+    "AWE32.sf2",
+    "ChoriumRevB.sf2",
+    "General808.sf2",
+    "GM SFX Bank.sf2",
+    "MidiocrePack.sf2",
+    "MIRACLE.sf2"
+  ],
+  "midiFiles": [
+    "Bach_-_Toccata_and_Fugue_Dm.mid",
+    "Beethoven_-_Fur_Elise.mid",
+    "Scott_Joplin_-_The_Entertainer.mid",
+    "Tchaikovsky_-_Sugar_Plum_Fairy.mid",
+    "Traditional_-_Drunken_Sailor.mid"
+  ],
+  "defaultSF2": "MidiocrePack.sf2",
+  "defaultMIDI": "Beethoven_-_Fur_Elise.mid",
+  "autoplay": false,
+  "loop": false,
+  "volume": 0.8,
+  "tempo": 1.0
+}

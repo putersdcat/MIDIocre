@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="synthwave">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Midiocre — Demo Player</title>
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>🎵 Midiocre Player</h1>
+      <p class="tagline">Mediocre by name, excellent by implementation.</p>
+      <div class="header-controls">
+        <div class="theme-picker">
+          <button class="theme-btn" data-theme="midnight" title="Midnight">🌙</button>
+          <button class="theme-btn active" data-theme="synthwave" title="Synthwave">🌆</button>
+          <button class="theme-btn" data-theme="emerald" title="Emerald">🌲</button>
+          <button class="theme-btn" data-theme="frost" title="Frost">❄️</button>
+          <button class="theme-btn" data-theme="hakerman" title="Hakerman">💀</button>
+        </div>
+      </div>
+    </header>
+
+    <section id="controls">
+      <div class="control-row">
+        <div class="dropdowns">
+          <label>SoundFont:
+            <select id="sf2-select"><option value="">Loading…</option></select>
+          </label>
+          <label>MIDI:
+            <select id="midi-select"><option value="">Loading…</option></select>
+          </label>
+          <label>Instrument:
+            <select id="instrument-select"><option value="-1">Auto (per-channel)</option></select>
+          </label>
+        </div>
+      </div>
+
+      <div class="control-row transport">
+        <button id="btn-prev" class="transport-sm" title="Restart / Previous track">⏮</button>
+        <button id="btn-playpause" title="Play">▶</button>
+        <button id="btn-stop" title="Stop" disabled>⏹</button>
+        <button id="btn-next" class="transport-sm" title="Next track">⏭</button>
+        <label class="loop-toggle">
+          <input type="checkbox" id="chk-loop"> Loop
+        </label>
+      </div>
+
+      <div class="control-row">
+        <label class="slider-label">Tempo:
+          <input type="range" id="tempo-slider" min="10" max="300" value="100" step="1">
+          <span id="tempo-value">100%</span>
+        </label>
+        <label class="slider-label">Volume:
+          <input type="range" id="volume-slider" min="0" max="100" value="80" step="1">
+          <span id="volume-value">80%</span>
+        </label>
+      </div>
+    </section>
+
+    <section id="progress-section">
+      <div class="viz-toolbar">
+        <button class="viz-toggle active" data-viz="piano" title="Piano keys">🎹</button>
+        <button class="viz-toggle" data-viz="waterfall" title="Note stream">🌊</button>
+        <button class="viz-toggle" data-viz="waveform" title="Waveform">〰️</button>
+      </div>
+      <div class="viz-container">
+        <canvas id="piano-canvas" width="800" height="80"></canvas>
+        <canvas id="waterfall-canvas" width="800" height="200" style="display:none"></canvas>
+        <canvas id="waveform-canvas" width="800" height="120" style="display:none"></canvas>
+      </div>
+      <div id="time-display">
+        <span id="current-time">0:00</span> / <span id="total-time">0:00</span>
+        <span id="voice-count"></span>
+      </div>
+    </section>
+
+    <section id="status">
+      <div id="status-text">Ready. Select a SoundFont and MIDI file to begin.</div>
+    </section>
+
+    <!-- ═══════════ SoundFont Builder ═══════════ -->
+    <section id="sf2-builder">
+      <div class="builder-header" id="builder-toggle">
+        <h2>🔧 SoundFont Builder</h2>
+        <span class="builder-arrow">▸</span>
+      </div>
+      <div class="builder-body" id="builder-body">
+
+        <div class="builder-row">
+          <div class="builder-sources" id="builder-sources">
+            <h3>Available SoundFonts</h3>
+            <div class="builder-hint">Loading catalog…</div>
+            <div id="sf2-catalog-list" class="catalog-list"></div>
+          </div>
+          <div class="builder-selection" id="builder-selection">
+            <h3>Selected Presets <span id="selection-count">(0)</span></h3>
+            <div id="selection-list" class="selection-list">
+              <div class="builder-hint">Select presets from the left to add them here.</div>
+            </div>
+            <button id="btn-clear-selection" class="builder-btn btn-secondary" disabled>Clear All</button>
+          </div>
+        </div>
+
+        <div class="builder-form">
+          <h3>Output Settings</h3>
+          <div class="builder-form-row">
+            <label>SoundFont Name:
+              <input type="text" id="sf2-build-name" placeholder="My Custom SoundFont" maxlength="64">
+            </label>
+            <label>Filename:
+              <input type="text" id="sf2-build-filename" placeholder="MyCustom.sf2" maxlength="64">
+            </label>
+          </div>
+          <div class="builder-form-row">
+            <label>Engineer:
+              <input type="text" id="sf2-build-engineer" placeholder="(optional)" maxlength="64">
+            </label>
+            <label>Copyright:
+              <input type="text" id="sf2-build-copyright" placeholder="(optional)" maxlength="64">
+            </label>
+          </div>
+          <div class="builder-form-row">
+            <label class="full-width">Comments:
+              <input type="text" id="sf2-build-comments" placeholder="(optional)" maxlength="128">
+            </label>
+          </div>
+          <div class="builder-actions">
+            <label class="overwrite-toggle">
+              <input type="checkbox" id="sf2-build-overwrite"> Overwrite if exists
+            </label>
+            <button id="btn-build-sf2" class="builder-btn btn-primary" disabled>🔨 Build SoundFont</button>
+          </div>
+          <div id="build-result" class="build-result"></div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function() {
+      // Development server serves the compiled bundle as /dist/demo.js
+      // Production (built for Pages) serves demo.js next to index.html (./demo.js)
+      const isDev = location.pathname.startsWith('/src/demo') || location.hostname === 'localhost';
+      const scriptSrc = isDev ? '/dist/demo.js' : './demo.js';
+      const s = document.createElement('script');
+      s.src = scriptSrc;
+      s.defer = true;
+      document.head.appendChild(s);
+    })();
+  </script>
+</body>
+</html>

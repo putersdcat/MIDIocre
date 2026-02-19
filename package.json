@@ -1,0 +1,35 @@
+{
+  "name": "midiocre",
+  "version": "1.0.0",
+  "description": "Standalone, high-performance, browser-first MIDI playback library with SF2 SoundFont support",
+  "type": "module",
+  "main": "dist/midiocre.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/midiocre.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "npm run build:lib && npm run build:demo && npm run build:cli",
+    "build:lib": "esbuild src/index.ts --bundle --format=esm --outfile=dist/midiocre.js --sourcemap",
+    "build:demo": "node scripts/build-demo.mjs",
+    "build:cli": "esbuild src/cli/sf2cli.ts --bundle --platform=node --format=esm --outfile=dist/cli/sf2cli.mjs --sourcemap --banner:js=\"#!/usr/bin/env node\"",
+    "dev": "node scripts/dev-server.mjs",
+    "typecheck": "tsc --noEmit",
+    "cli": "node dist/cli/sf2cli.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "esbuild": "^0.20.0",
+    "@types/node": "^20.0.0"
+  },
+  "files": [
+    "dist/midiocre.js",
+    "dist/midiocre.js.map",
+    "dist/index.d.ts"
+  ],
+  "keywords": ["midi", "soundfont", "sf2", "music", "audio", "web-audio", "synthesizer"],
+  "license": "MIT"
+}
