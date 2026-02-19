@@ -28,21 +28,37 @@ for (const file of staticFiles) {
 }
 
 // Copy demo asset directories so the demo works on static hosting (SoundFonts + DemoMidiFiles)
-const assetDirs = ['SoundFonts', 'DemoMidiFiles'];
-for (const d of assetDirs) {
-  const srcDir = join('.', d);
-  const destDir = join(outDir, d);
-  if (existsSync(srcDir)) {
-    try {
-      mkdirSync(destDir, { recursive: true });
-      cpSync(srcDir, destDir, { recursive: true });
-    } catch (err) {
-      // Fallback (shallow copy) for environments without cpSync
-      const files = require('fs').readdirSync(srcDir);
-      for (const f of files) {
-        copyFileSync(join(srcDir, f), join(destDir, f));
-      }
-    }
+// Only copy SoundFont files that the demo actually lists in src/demo/demo-player.config.json.
+// This prevents accidentally packaging local, ignored .sf2 files into dist/demo during a local build.
+const demoConfigPath = join('src', 'demo', 'demo-player.config.json');
+let sf2FilesToCopy = [];
+if (existsSync(demoConfigPath)) {
+  try {
+    const cfg = JSON.parse(require('fs').readFileSync(demoConfigPath, 'utf8'));
+    sf2FilesToCopy = cfg.sf2Files ?? [];
+  } catch (err) {
+    // malformed config — fall back to copying nothing for SoundFonts
+  }
+}
+const soundfontsSrcDir = join('.', 'SoundFonts');
+const soundfontsDestDir = join(outDir, 'SoundFonts');
+if (sf2FilesToCopy.length && existsSync(soundfontsSrcDir)) {
+  mkdirSync(soundfontsDestDir, { recursive: true });
+  for (const f of sf2FilesToCopy) {
+    const srcFile = join(soundfontsSrcDir, f);
+    if (existsSync(srcFile)) copyFileSync(srcFile, join(soundfontsDestDir, f));
+  }
+}
+
+// Copy DemoMidiFiles directory (whole directory)
+const midiSrc = join('.', 'DemoMidiFiles');
+const midiDest = join(outDir, 'DemoMidiFiles');
+if (existsSync(midiSrc)) {
+  try {
+    cpSync(midiSrc, midiDest, { recursive: true });
+  } catch (err) {
+    const files = require('fs').readdirSync(midiSrc);
+    for (const f of files) copyFileSync(join(midiSrc, f), join(midiDest, f));
   }
 }
 
