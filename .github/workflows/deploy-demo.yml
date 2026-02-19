@@ -6,8 +6,8 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  build:
-    name: Build demo
+  build_and_deploy:
+    name: Build and deploy demo to GitHub Pages
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -38,13 +38,6 @@ jobs:
         with:
           path: 'dist/demo'
 
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
+
