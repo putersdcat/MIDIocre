@@ -8,7 +8,15 @@ Note: this project was prompted into existence in about two hours to support ano
 
 [Live demo (GitHub Pages) — https://putersdcat.github.io/MIDIocre/](https://putersdcat.github.io/MIDIocre/)
 
-[![Midiocre demo screenshot](midiocrepack-piano.png)](https://putersdcat.github.io/MIDIocre/)
+[![Midiocre demo slideshow](assets/readme-slideshow.gif)](https://putersdcat.github.io/MIDIocre/)
+
+
+> Demo screenshots — click the image to open the live demo (GitHub Pages). You can regenerate the slideshow locally with:
+>
+> 1. pip install pillow
+> 2. python scripts/make-readme-slideshow.py
+>
+> The script crops all screenshots in .playwright-mcp to a uniform center-crop and produces assets/readme-slideshow.gif (committed).
 
 The demo is published automatically by the .github/workflows/deploy-demo.yml workflow.
 

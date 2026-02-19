@@ -18,8 +18,9 @@
     "build:cli": "esbuild src/cli/sf2cli.ts --bundle --platform=node --format=esm --outfile=dist/cli/sf2cli.mjs --sourcemap --banner:js=\"#!/usr/bin/env node\"",
     "dev": "node scripts/dev-server.mjs",
     "typecheck": "tsc --noEmit",
-    "cli": "node dist/cli/sf2cli.mjs"
-  },
+    "cli": "node dist/cli/sf2cli.mjs",
+    "readme:slideshow": "python scripts/make-readme-slideshow.py"
+  }
   "devDependencies": {
     "typescript": "^5.4.0",
     "esbuild": "^0.20.0",

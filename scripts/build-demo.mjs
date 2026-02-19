@@ -43,7 +43,16 @@ if (existsSync(demoConfigPath)) {
 const soundfontsSrcDir = join('.', 'SoundFonts');
 const soundfontsDestDir = join(outDir, 'SoundFonts');
 if (sf2FilesToCopy.length && existsSync(soundfontsSrcDir)) {
-  mkdirSync(soundfontsDestDir, { recursive: true });
+  // clear destination folder so leftover (local-only) .sf2 files aren't accidentally retained
+  if (existsSync(soundfontsDestDir)) {
+    const existing = require('fs').readdirSync(soundfontsDestDir);
+    for (const fn of existing) {
+      try { require('fs').unlinkSync(join(soundfontsDestDir, fn)); } catch (err) { /* ignore */ }
+    }
+  } else {
+    mkdirSync(soundfontsDestDir, { recursive: true });
+  }
+
   for (const f of sf2FilesToCopy) {
     const srcFile = join(soundfontsSrcDir, f);
     if (existsSync(srcFile)) copyFileSync(srcFile, join(soundfontsDestDir, f));
