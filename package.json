@@ -19,18 +19,30 @@
     "dev": "node scripts/dev-server.mjs",
     "typecheck": "tsc --noEmit",
     "cli": "node dist/cli/sf2cli.mjs",
-    "readme:slideshow": "python scripts/make-readme-slideshow.py"
+    "readme:slideshow": "node scripts/make-readme-slideshow.ts",
+    "readme:screenshots": "node scripts/take-screenshots.ts"
   },
   "devDependencies": {
-    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0",
+    "@types/sharp": "^0.31.1",
     "esbuild": "^0.20.0",
-    "@types/node": "^20.0.0"
+    "playwright": "^1.58.2",
+    "sharp": "^0.34.5",
+    "typescript": "^5.4.0"
   },
   "files": [
     "dist/midiocre.js",
     "dist/midiocre.js.map",
     "dist/index.d.ts"
   ],
-  "keywords": ["midi", "soundfont", "sf2", "music", "audio", "web-audio", "synthesizer"],
+  "keywords": [
+    "midi",
+    "soundfont",
+    "sf2",
+    "music",
+    "audio",
+    "web-audio",
+    "synthesizer"
+  ],
   "license": "CC0-1.0"
 }
