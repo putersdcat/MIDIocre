@@ -46,6 +46,7 @@ jobs:
       - name: Verify demo output
         run: |
           echo "Contents of dist/demo:" && ls -la dist/demo || true
+          echo "Generated assets:" && ls -la assets/ || true
 
       - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v4

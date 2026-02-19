@@ -27,8 +27,9 @@ for (const file of staticFiles) {
 
   // When building in CI (GitHub Actions / Pages), emit a demo config
   // that disables server-dependent features (SF2 Builder) because
+  // When building in CI (GitHub Actions / Pages), emit a demo config
+  // that disables server-dependent features (SF2 Builder) because
   // GitHub Pages is static and has no /api backend.
-  console.log('GITHUB_ACTIONS env var:', process.env.GITHUB_ACTIONS, 'type:', typeof process.env.GITHUB_ACTIONS);
   if (file === 'demo-player.config.json' && (process.env.GITHUB_ACTIONS === 'true' || process.env.GITHUB_ACTIONS === true)) {
     try {
       const cfg = JSON.parse(readFileSync(src, 'utf8'));
