@@ -274,8 +274,10 @@ async function processImages(args: Args): Promise<void> {
 
       frameFiles = [];
       for (let i = 0; i < finalFrames.length; i++) {
-        const frameFile = join(tempDir, `frame_${i.toString().padStart(3, '0')}.png`);
-        await fs.writeFile(frameFile, finalFrames[i]);
+        const frameFile = join(tempDir, `frame_${i.toString().padStart(3, '0')}.gif`);
+        // Convert PNG buffer to GIF
+        const gifBuffer = await sharp(finalFrames[i]).gif().toBuffer();
+        await fs.writeFile(frameFile, gifBuffer);
         frameFiles.push(frameFile);
       }
 
