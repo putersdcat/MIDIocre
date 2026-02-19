@@ -20,7 +20,7 @@
     "typecheck": "tsc --noEmit",
     "cli": "node dist/cli/sf2cli.mjs",
     "readme:slideshow": "python scripts/make-readme-slideshow.py"
-  }
+  },
   "devDependencies": {
     "typescript": "^5.4.0",
     "esbuild": "^0.20.0",
