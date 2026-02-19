@@ -223,4 +223,4 @@ src/
 
 ## License
 
-MIT
+CC0 1.0 Universal — public domain dedication. You may copy, modify, distribute, and perform the work, even for commercial purposes, all without asking permission. See the LICENSE file for details.

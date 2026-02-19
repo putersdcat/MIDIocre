@@ -31,5 +31,5 @@
     "dist/index.d.ts"
   ],
   "keywords": ["midi", "soundfont", "sf2", "music", "audio", "web-audio", "synthesizer"],
-  "license": "MIT"
+  "license": "CC0-1.0"
 }

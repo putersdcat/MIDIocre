@@ -34,7 +34,7 @@ jobs:
           echo "Contents of dist/demo:" && ls -la dist/demo || true
 
       - name: Upload artifact for GitHub Pages
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v4
         with:
           path: 'dist/demo'
 
@@ -47,4 +47,4 @@ jobs:
       id-token: write
     steps:
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
