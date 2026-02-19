@@ -74,7 +74,7 @@ function readBody(req) {
 
 // -- Static file server + API ------------------------------------------------
 
-const PORT = 3000;
+const PORT = process.env.PORT || process.env.DEV_PORT || 3000; // allow overriding the dev port via env
 const SF2_DIR = join('.', 'SoundFonts');
 
 createServer(async (req, res) => {
