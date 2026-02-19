@@ -19,10 +19,13 @@
  * and is safe to run locally before committing the generated assets.
  */
 
+import { createRequire } from 'module';
 import { promises as fs } from 'fs';
-import { join, extname } from 'path';
+import { join, extname, dirname } from 'path';
 import sharp from 'sharp';
 import { readdir, stat } from 'fs/promises';
+
+const require = createRequire(import.meta.url);
 
 const DEFAULT_SRC = '.playwright-mcp';
 const DEFAULT_OUT = 'assets/readme-screenshots';
@@ -257,7 +260,7 @@ async function processImages(args: Args): Promise<void> {
 
   // Create animated GIF
   if (finalFrames.length > 0) {
-    await fs.mkdir(require('path').dirname(gif), { recursive: true });
+    await fs.mkdir(dirname(gif), { recursive: true });
 
     // For now, just save the first frame as a placeholder
     // Full GIF animation would require additional libraries like gifencoder

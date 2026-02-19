@@ -839,6 +839,7 @@ async function init(): Promise<void> {
 
   // Toggle builder panel
   builderToggle.addEventListener('click', () => {
+    if (!builderEnabled) return; // Prevent opening when disabled
     builderOpen = !builderOpen;
     builderBody.classList.toggle('open', builderOpen);
     builderArrow.classList.toggle('open', builderOpen);
@@ -1043,6 +1044,8 @@ async function init(): Promise<void> {
 
   // Build the custom SF2
   btnBuildSF2.addEventListener('click', async () => {
+    if (!builderEnabled) return; // Shouldn't happen since button is disabled, but safety check
+
     const name = buildNameInput.value.trim();
     const filename = buildFilenameInput.value.trim() || (name.replace(/[^a-zA-Z0-9]/g, '_') + '.sf2');
 
