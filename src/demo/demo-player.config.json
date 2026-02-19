@@ -16,5 +16,6 @@
   "autoplay": false,
   "loop": false,
   "volume": 0.8,
-  "tempo": 1.0
+  "tempo": 1.0,
+  "enableSF2Builder": true
 }

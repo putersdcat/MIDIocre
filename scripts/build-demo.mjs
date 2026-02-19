@@ -22,9 +22,24 @@ buildSync({
 const staticFiles = ['index.html', 'demo.css', 'demo-player.config.json'];
 for (const file of staticFiles) {
   const src = join('src/demo', file);
-  if (existsSync(src)) {
-    copyFileSync(src, join(outDir, file));
+  const dest = join(outDir, file);
+  if (!existsSync(src)) continue;
+
+  // When building in CI (GitHub Actions / Pages), emit a demo config
+  // that disables server-dependent features (SF2 Builder) because
+  // GitHub Pages is static and has no /api backend.
+  if (file === 'demo-player.config.json' && process.env.GITHUB_ACTIONS) {
+    try {
+      const cfg = JSON.parse(require('fs').readFileSync(src, 'utf8'));
+      cfg.enableSF2Builder = false;
+      require('fs').writeFileSync(dest, JSON.stringify(cfg, null, 2), 'utf8');
+      continue;
+    } catch (err) {
+      // fallback to copying original
+    }
   }
+
+  copyFileSync(src, dest);
 }
 
 // Copy demo asset directories so the demo works on static hosting (SoundFonts + DemoMidiFiles)

@@ -802,6 +802,37 @@ async function init(): Promise<void> {
   const buildOverwriteChk = $('sf2-build-overwrite') as HTMLInputElement;
   const buildResultEl = $('build-result');
 
+  // Respect build-time flag so static Pages sites (no backend API) can
+  // clearly show the builder as unavailable instead of attempting to
+  // call /api/build-sf2 which won't exist on GitHub Pages.
+  const builderEnabled = (config.enableSF2Builder ?? true) as boolean;
+
+  if (!builderEnabled) {
+    // show an explanatory hint and disable controls (keeps UI visible)
+    const hint = document.createElement('div');
+    hint.className = 'builder-hint';
+    hint.textContent = 'SoundFont Builder is disabled on this deployed demo (no server-side API).';
+    // replace sources pane content with the hint
+    const sources = $('builder-sources');
+    sources.innerHTML = '';
+    sources.appendChild(hint);
+
+    // disable interactive controls to avoid confusion
+    btnBuildSF2.disabled = true;
+    btnClearSelection.disabled = true;
+    buildNameInput.disabled = true;
+    buildFilenameInput.disabled = true;
+    buildEngineerInput.disabled = true;
+    buildCopyrightInput.disabled = true;
+    buildCommentsInput.disabled = true;
+    buildOverwriteChk.disabled = true;
+
+    // visually mark the toggle as disabled and prevent open/close
+    builderToggle.classList.add('disabled');
+    builderToggle.title = 'SoundFont Builder is disabled in this build.';
+    builderToggle.addEventListener('click', () => { /* no-op when disabled */ });
+  }
+
   let catalog: CatalogEntry[] = [];
   const selection: SelectionItem[] = [];
   let builderOpen = false;
