@@ -36,8 +36,8 @@ export interface MidiocreState {
 }
 
 const DEFAULT_CONFIG: MidiocreConfig = {
-  sf2Path: '/SoundFonts',
-  midiPath: '/DemoMidiFiles',
+  sf2Path: 'SoundFonts',
+  midiPath: 'DemoMidiFiles',
   sf2Files: [],
   midiFiles: [],
   autoplay: false,

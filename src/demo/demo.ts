@@ -5,8 +5,8 @@ import { Midiocre, MidiocreConfig } from '../api/Midiocre.js';
 // -- Config resolution -------------------------------------------------------
 
 const BUILT_IN_DEFAULTS: MidiocreConfig = {
-  sf2Path: '/SoundFonts',
-  midiPath: '/DemoMidiFiles',
+  sf2Path: 'SoundFonts',
+  midiPath: 'DemoMidiFiles',
   sf2Files: [],
   midiFiles: [],
   autoplay: false,

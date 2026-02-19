@@ -32,10 +32,11 @@ for (const file of staticFiles) {
     try {
       const cfg = JSON.parse(require('fs').readFileSync(src, 'utf8'));
       // Pages is static — disable server-side features and make
-      // sf2Path relative so SoundFonts are resolved under the repo
-      // path on GitHub Pages (e.g. /<repo>/SoundFonts/...)
+      // paths relative so assets are resolved under the repo
+      // path on GitHub Pages (e.g. /<repo>/SoundFonts/..., /<repo>/DemoMidiFiles/...)
       cfg.enableSF2Builder = false;
       cfg.sf2Path = 'SoundFonts';
+      cfg.midiPath = 'DemoMidiFiles';
       require('fs').writeFileSync(dest, JSON.stringify(cfg, null, 2), 'utf8');
       continue;
     } catch (err) {
