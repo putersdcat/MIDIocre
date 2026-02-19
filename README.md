@@ -4,6 +4,8 @@
 
 A standalone, high-performance, browser-first MIDI playback library with SoundFont 2 support. Built entirely in TypeScript with zero runtime dependencies — no external MIDI parsers, synth libraries, or playback engines.
 
+Note: this project was prompted into existence in about two hours to support another project that I keep intentionally dependency‑free — my own libs were a pass ;-).
+
 [Live demo (GitHub Pages) — https://<YOUR_GITHUB_USERNAME>.github.io/MIDIocre/](https://<YOUR_GITHUB_USERNAME>.github.io/MIDIocre/)
 
 [![Midiocre demo screenshot](midiocrepack-piano.png)](https://<YOUR_GITHUB_USERNAME>.github.io/MIDIocre/)
