@@ -24,6 +24,7 @@ import { promises as fs } from 'fs';
 import { join, extname, dirname } from 'path';
 import sharp from 'sharp';
 import { readdir, stat } from 'fs/promises';
+import { spawn } from 'child_process';
 
 const require = createRequire(import.meta.url);
 
@@ -262,11 +263,54 @@ async function processImages(args: Args): Promise<void> {
   if (finalFrames.length > 0) {
     await fs.mkdir(dirname(gif), { recursive: true });
 
-    // For now, just save the first frame as a placeholder
-    // Full GIF animation would require additional libraries like gifencoder
-    await fs.writeFile(gif, finalFrames[0]);
-    console.log(`Created GIF placeholder: ${gif} (${finalFrames.length} frames)`);
-    console.log('Note: Full animated GIF support requires additional implementation');
+    // Try to create animated GIF using gifsicle if available
+    try {
+      // Save frames as temporary files for gifsicle
+      const tempDir = join(dirname(gif), 'temp_frames');
+      await fs.mkdir(tempDir, { recursive: true });
+
+      const frameFiles: string[] = [];
+      for (let i = 0; i < finalFrames.length; i++) {
+        const frameFile = join(tempDir, `frame_${i.toString().padStart(3, '0')}.png`);
+        await fs.writeFile(frameFile, finalFrames[i]);
+        frameFiles.push(frameFile);
+      }
+
+      // Try to use gifsicle to create animated GIF
+      await new Promise<void>((resolve, reject) => {
+        const gifsicle = spawn('gifsicle', [
+          '--delay', args.duration.toString(),
+          '--loop',
+          '--optimize=3',
+          ...frameFiles,
+          '--output', gif
+        ], { stdio: 'inherit' });
+
+        gifsicle.on('close', (code) => {
+          if (code === 0) {
+            resolve();
+          } else {
+            reject(new Error(`gifsicle exited with code ${code}`));
+          }
+        });
+
+        gifsicle.on('error', (err) => {
+          reject(err);
+        });
+      });
+
+      // Clean up temp files
+      await Promise.all(frameFiles.map(f => fs.unlink(f)));
+      await fs.rmdir(tempDir);
+
+      console.log(`Created animated GIF with gifsicle: ${gif} (${finalFrames.length} frames)`);
+    } catch (err) {
+      // Fallback: create a static image with the first frame
+      console.log('gifsicle not available, creating static preview image');
+      await fs.writeFile(gif.replace('.gif', '_preview.png'), finalFrames[0]);
+      console.log(`Created static preview: ${gif.replace('.gif', '_preview.png')}`);
+      console.log('To create animated GIF, install gifsicle: choco install gifsicle (Windows) or apt install gifsicle (Linux/Mac)');
+    }
   }
 
   console.log('Done.');

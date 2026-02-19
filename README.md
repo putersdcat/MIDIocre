@@ -13,10 +13,10 @@ Note: this project was prompted into existence in about two hours to support ano
 
 > Demo screenshots — click the image to open the live demo (GitHub Pages). You can regenerate the slideshow locally with:
 >
-> 1. pip install pillow
-> 2. python scripts/make-readme-slideshow.py
+> 1. npm run readme:screenshots  # Takes screenshots of all themes
+> 2. npm run readme:slideshow -- --cycle-themes  # Creates animated GIF
 >
-> The script crops all screenshots in .playwright-mcp to a uniform center-crop and produces assets/readme-slideshow.gif (committed).
+> The scripts process screenshots in .playwright-mcp, crop them uniformly, and produce assets/readme-slideshow.gif (committed).
 
 The demo is published automatically by the .github/workflows/deploy-demo.yml workflow.
 

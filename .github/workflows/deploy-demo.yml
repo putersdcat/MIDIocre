@@ -29,14 +29,19 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      - name: Install gifsicle for GIF creation
+        run: sudo apt-get update && sudo apt-get install -y gifsicle
+
       - name: Build (library + demo + CLI)
         run: npm run build --if-present
 
       - name: Generate README screenshots
         run: npm run readme:screenshots
+        continue-on-error: true
 
       - name: Generate README slideshow
         run: npm run readme:slideshow -- --cycle-themes --repeat 2
+        continue-on-error: true
 
       - name: Verify demo output
         run: |

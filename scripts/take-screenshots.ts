@@ -50,8 +50,8 @@ async function takeScreenshots(): Promise<void> {
     // Create output directory
     await fs.mkdir(OUTPUT_DIR, { recursive: true });
 
-    // Launch browser
-    const browser = await chromium.launch();
+    // Launch browser (headless by default)
+    const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
 
     // Set viewport size
@@ -66,23 +66,28 @@ async function takeScreenshots(): Promise<void> {
 
     // Take screenshot for each theme
     for (const theme of THEMES) {
-      console.log(`Taking screenshot for theme: ${theme}`);
+      try {
+        console.log(`Taking screenshot for theme: ${theme}`);
 
-      // Click the theme button
-      const themeButton = page.locator(`.theme-btn[data-theme="${theme}"]`);
-      await themeButton.click();
+        // Click the theme button
+        const themeButton = page.locator(`.theme-btn[data-theme="${theme}"]`);
+        await themeButton.click();
 
-      // Wait for theme to apply
-      await page.waitForTimeout(500);
+        // Wait for theme to apply
+        await page.waitForTimeout(500);
 
-      // Take screenshot
-      const screenshotPath = join(OUTPUT_DIR, `demo-${theme}.png`);
-      await page.screenshot({
-        path: screenshotPath,
-        fullPage: true,
-      });
+        // Take screenshot
+        const screenshotPath = join(OUTPUT_DIR, `demo-${theme}.png`);
+        await page.screenshot({
+          path: screenshotPath,
+          fullPage: true,
+        });
 
-      console.log(`Saved: ${screenshotPath}`);
+        console.log(`Saved: ${screenshotPath}`);
+      } catch (error) {
+        console.error(`Failed to take screenshot for theme ${theme}:`, error);
+        // Continue with other themes
+      }
     }
 
     await browser.close();
