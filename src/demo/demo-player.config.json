@@ -1,5 +1,5 @@
 {
-  "sf2Path": "SoundFonts",
+  "sf2Path": "/SoundFonts",
   "midiPath": "DemoMidiFiles",
   "sf2Files": [
     "MidiocrePack.sf2"
