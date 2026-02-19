@@ -58,6 +58,16 @@ jobs:
             echo "GIF not found in assets/"
           fi
 
+      - name: Commit generated assets
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add assets/readme-slideshow.gif assets/readme-screenshots/ || true
+          git commit -m "docs: update README slideshow and screenshots [skip ci]" || echo "No changes to commit"
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Verify demo output
         run: |
           echo "Contents of dist/demo:" && ls -la dist/demo || true
