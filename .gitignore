@@ -1,0 +1,88 @@
+# .gitignore for MIDIocre
+# Node + TypeScript project (Windows/VS Code)
+
+# Node modules
+/node_modules/
+
+# Build output
+/dist/
+/build/
+/out/
+/lib/
+/es/
+
+# TypeScript incremental build file
+*.tsbuildinfo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+logs/
+
+# Runtime / temp files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Test coverage
+coverage/
+.nyc_output/
+coverage-final.json
+
+# Bundler / cache directories
+.cache/
+.parcel-cache/
+.vite/
+.esbuild/
+.rollup.cache/
+
+# Editor directories and files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Playwright / E2E test artifacts
+.playwright/
+.playwright-report/
+.playwright-mcp/
+.playwright
+env/.playwright
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor swap files
+*~
+*.swp
+*.swo
+
+# Package artifacts
+*.tgz
+*.zip
+*.tar.gz
+
+# Generated/temporary soundfont output (keep original SoundFonts/ tracked)
+/dist/*.sf2
+
+# Environment files (ignore real secrets, keep examples)
+.env
+.env.*
+!.env.example
+
+# Misc
+.node_repl_history
+
+# ------------------------------------------------------------------
+# Project asset policy for SoundFonts
+# Keep only the demo SoundFont (MidiocrePack.sf2) tracked; ignore other .sf2 files.
+# If you want to ship more SF2s, remove the ignore rule below.
+# ------------------------------------------------------------------
+/SoundFonts/*.sf2
+!/SoundFonts/MidiocrePack.sf2

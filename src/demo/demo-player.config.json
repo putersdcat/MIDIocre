@@ -2,12 +2,7 @@
   "sf2Path": "/SoundFonts",
   "midiPath": "/DemoMidiFiles",
   "sf2Files": [
-    "AWE32.sf2",
-    "ChoriumRevB.sf2",
-    "General808.sf2",
-    "GM SFX Bank.sf2",
-    "MidiocrePack.sf2",
-    "MIRACLE.sf2"
+    "MidiocrePack.sf2"
   ],
   "midiFiles": [
     "Bach_-_Toccata_and_Fugue_Dm.mid",
