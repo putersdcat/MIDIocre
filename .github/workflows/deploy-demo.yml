@@ -36,12 +36,18 @@ jobs:
         run: npm run build --if-present
 
       - name: Generate README screenshots
-        run: npm run readme:screenshots
-        continue-on-error: true
+        run: |
+          echo "Running screenshot generation..."
+          npm run readme:screenshots
+          echo "Screenshots generated. Contents of .playwright-mcp:"
+          ls -la .playwright-mcp/ || echo "No .playwright-mcp directory"
 
       - name: Generate README slideshow
-        run: npm run readme:slideshow -- --cycle-themes --repeat 2
-        continue-on-error: true
+        run: |
+          echo "Running slideshow generation..."
+          npm run readme:slideshow -- --cycle-themes --repeat 2
+          echo "Slideshow generation complete. Checking assets:"
+          ls -la assets/ || echo "No assets directory"
 
       - name: Verify demo output
         run: |
