@@ -46,6 +46,9 @@ coverage-final.json
 *.sublime-workspace
 *.sublime-project
 
+# Python/typing caches
+.mypy_cache/
+
 # Playwright / E2E test artifacts
 .playwright/
 .playwright-report/
