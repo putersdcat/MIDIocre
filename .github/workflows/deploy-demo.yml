@@ -29,9 +29,18 @@ jobs:
       - name: Build (library + demo + CLI)
         run: npm run build --if-present
 
+      - name: Generate README screenshots
+        run: npm run readme:screenshots
+        continue-on-error: true
+
+      - name: Generate README slideshow
+        run: npm run readme:slideshow -- --cycle-themes --repeat 1 --duration 500 --resize-width 800
+        continue-on-error: true
+
       - name: Verify demo output
         run: |
           echo "Contents of dist/demo:" && ls -la dist/demo || true
+          echo "Generated assets:" && ls -la assets/ || true
 
       - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v4
