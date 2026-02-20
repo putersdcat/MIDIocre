@@ -15,6 +15,41 @@ const BUILT_IN_DEFAULTS: MidiocreConfig = {
   tempo: 1.0,
 };
 
+async function discoverSF2Files(sf2Path: string): Promise<string[]> {
+  // For now, return a known list of SF2 files
+  // In the future, this could be made dynamic if server supports directory listing
+  const knownFiles = [
+    'MidiocrePack.sf2'
+  ];
+
+  // Verify files exist by trying to fetch them
+  const existingFiles: string[] = [];
+  for (const file of knownFiles) {
+    try {
+      const resp = await fetch(`${sf2Path}/${file}`, { method: 'HEAD' });
+      if (resp.ok) existingFiles.push(file);
+    } catch { /* file doesn't exist */ }
+  }
+
+  return existingFiles;
+}
+
+async function fetchAllSF2Files(): Promise<string[]> {
+  try {
+    // Try to fetch from the dev server's API
+    const resp = await fetch('/api/sf2-catalog');
+    if (resp.ok) {
+      const data = await resp.json();
+      return data.catalog.map((item: any) => item.filename);
+    }
+  } catch { /* API not available, fall back to known files */ }
+
+  // Fallback: return known files
+  return [
+    'MidiocrePack.sf2'
+  ];
+}
+
 async function loadConfig(): Promise<MidiocreConfig> {
   let config = { ...BUILT_IN_DEFAULTS };
   try {
@@ -23,6 +58,37 @@ async function loadConfig(): Promise<MidiocreConfig> {
   } catch { /* optional */ }
   const winConfig = (window as any).MidiocrePlayerConfig;
   if (winConfig && typeof winConfig === 'object') config = { ...config, ...winConfig };
+
+  // Auto-discover SF2 files if none are configured and SF2 builder is enabled
+  // (GitHub Pages has enableSF2Builder=false, so this won't run there)
+  if (config.enableSF2Builder ?? true) {
+    try {
+      let sf2Files: string[] = [];
+
+      if (!config.sf2Files || config.sf2Files.length === 0) {
+        // No sf2Files configured, auto-discover all
+        sf2Files = await fetchAllSF2Files();
+      } else if (config.sf2Files.includes('*')) {
+        // Wildcard present, combine specified files with all available
+        const allFiles = await fetchAllSF2Files();
+        const specifiedFiles = config.sf2Files.filter(f => f !== '*');
+        sf2Files = [...new Set([...specifiedFiles, ...allFiles])];
+      } else {
+        // Specific files configured, verify they exist
+        sf2Files = await discoverSF2Files(config.sf2Path || '/SoundFonts');
+      }
+
+      if (sf2Files.length > 0) {
+        config.sf2Files = sf2Files;
+        if (!config.defaultSF2 && sf2Files.length > 0) {
+          config.defaultSF2 = sf2Files[0];
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to auto-discover SF2 files:', err);
+    }
+  }
+
   return config;
 }
 
@@ -651,6 +717,23 @@ async function init(): Promise<void> {
     }
   }
 
+  // -- Helper functions --
+
+  function cycleSelect(select: HTMLSelectElement, direction: number): void {
+    const options = Array.from(select.options);
+    if (options.length <= 1) return;
+
+    let currentIndex = select.selectedIndex;
+    if (currentIndex === -1) currentIndex = 0;
+
+    let newIndex = currentIndex + direction;
+    if (newIndex < 0) newIndex = options.length - 1;
+    if (newIndex >= options.length) newIndex = 0;
+
+    select.selectedIndex = newIndex;
+    select.dispatchEvent(new Event('change'));
+  }
+
   // -- Event handlers --
 
   btnPlayPause.addEventListener('click', async () => {
@@ -745,6 +828,12 @@ async function init(): Promise<void> {
   instrumentSelect.addEventListener('change', () => {
     player.setInstrument(Number(instrumentSelect.value));
   });
+
+  // Navigation buttons for selectors
+  $('sf2-prev').addEventListener('click', () => cycleSelect(sf2Select, -1));
+  $('sf2-next').addEventListener('click', () => cycleSelect(sf2Select, 1));
+  $('instrument-prev').addEventListener('click', () => cycleSelect(instrumentSelect, -1));
+  $('instrument-next').addEventListener('click', () => cycleSelect(instrumentSelect, 1));
 
   // Canvas click-to-seek (works on all viz modes)
   for (const el of [pianoCanvasEl, waterfallCanvasEl, waveformCanvasEl]) {

@@ -20,6 +20,7 @@ export interface MidiocreConfig {
   loop?: boolean;
   volume?: number;
   tempo?: number;
+  enableSF2Builder?: boolean;
 }
 
 export interface MidiocreState {

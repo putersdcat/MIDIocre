@@ -2,7 +2,8 @@
   "sf2Path": "/SoundFonts",
   "midiPath": "/DemoMidiFiles",
   "sf2Files": [
-    "MidiocrePack.sf2"
+    "MidiocrePack.sf2",
+    "*"
   ],
   "midiFiles": [
     "Bach_-_Toccata_and_Fugue_Dm.mid",

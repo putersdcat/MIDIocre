@@ -35,7 +35,7 @@ for (const file of staticFiles) {
       // Pages is static — disable server-side features and make
       // paths relative so assets are resolved under the repo
       // path on GitHub Pages (e.g. /<repo>/SoundFonts/..., /<repo>/DemoMidiFiles/...)
-      cfg.enableSF2Builder = false;
+      cfg.enableSF2Builder = true;
       cfg.sf2Path = 'SoundFonts';
       cfg.midiPath = 'DemoMidiFiles';
       writeFileSync(dest, JSON.stringify(cfg, null, 2), 'utf8');
