@@ -26,13 +26,25 @@
       <div class="control-row">
         <div class="dropdowns">
           <label>SoundFont:
-            <select id="sf2-select"><option value="">Loading…</option></select>
+            <div class="select-with-nav">
+              <select id="sf2-select"><option value="">Loading…</option></select>
+              <div class="nav-buttons">
+                <button id="sf2-prev" class="nav-btn" title="Previous SoundFont">▲</button>
+                <button id="sf2-next" class="nav-btn" title="Next SoundFont">▼</button>
+              </div>
+            </div>
           </label>
           <label>MIDI:
             <select id="midi-select"><option value="">Loading…</option></select>
           </label>
           <label>Instrument:
-            <select id="instrument-select"><option value="-1">Auto (per-channel)</option></select>
+            <div class="select-with-nav">
+              <select id="instrument-select"><option value="-1">Auto (per-channel)</option></select>
+              <div class="nav-buttons">
+                <button id="instrument-prev" class="nav-btn" title="Previous Instrument">▲</button>
+                <button id="instrument-next" class="nav-btn" title="Next Instrument">▼</button>
+              </div>
+            </div>
           </label>
         </div>
       </div>
