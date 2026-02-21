@@ -1,4 +1,4 @@
-# Midiocre
+# MIDIocre
 
 **Mediocre by name, excellent by implementation.**
 
