@@ -81,68 +81,146 @@
         <!-- ORIGINAL APP CONTENT WRAPPED -->
         <div id="app">
             <header>
-                <h1>🎵 MIDIocre Player</h1>
-                <div class="tagline">Mediocre by name, excellent by implementation.</div>
-                <div class="header-controls">
-                    <div class="theme-picker">
-                        <button class="theme-btn" data-theme="midnight">🌙</button>
-                        <button class="theme-btn" data-theme="synthwave">🌆</button>
-                        <button class="theme-btn" data-theme="emerald">🌲</button>
-                        <button class="theme-btn" data-theme="frost">❄️</button>
-                        <button class="theme-btn active" data-theme="hakerman">💀</button>
-                    </div>
+              <!-- <h1>🎵 MIDIocre Player</h1>
+              <p class="tagline">Mediocre by name, excellent by implementation.</p> -->
+              <div class="header-controls">
+                <div class="theme-picker">
+                  <button class="theme-btn" data-theme="midnight" title="Midnight">🌙</button>
+                  <button class="theme-btn active" data-theme="synthwave" title="Synthwave">🌆</button>
+                  <button class="theme-btn" data-theme="emerald" title="Emerald">🌲</button>
+                  <button class="theme-btn" data-theme="frost" title="Frost">❄️</button>
+                  <button class="theme-btn" data-theme="hakerman" title="Hakerman">💀</button>
                 </div>
+              </div>
             </header>
 
-            <div id="controls">
-                <!-- v3.3 NEW RETRO PLAYER BUTTONS (Winamp-tracker style) -->
-                <div class="control-row transport">
-                    <button class="transport-btn" title="Previous">⏮</button>
-                    <button class="transport-btn" title="Rewind">⏪</button>
-                    <button id="play-pause-btn" class="transport-btn play-btn" title="Play / Pause">▶</button>
-                    <button class="transport-btn" title="Stop">⏹</button>
-                    <button class="transport-btn" title="Fast Forward">⏩</button>
-                    <button class="transport-btn" title="Next">⏭</button>
-                    <div class="led" id="play-led"></div>
-                </div>
-
-                <div class="control-row dropdowns">
+            <section id="controls">
+              <div class="control-row">
+                <div class="dropdowns">
+                  <label>SoundFont:
                     <div class="select-with-nav">
-                        <label>MIDI File</label>
-                        <select><option>— Select MIDI —</option></select>
+                      <select id="sf2-select"><option value="">Loading…</option></select>
+                      <div class="nav-buttons">
+                        <button id="sf2-prev" class="nav-btn" title="Previous SoundFont">▲</button>
+                        <button id="sf2-next" class="nav-btn" title="Next SoundFont">▼</button>
+                      </div>
                     </div>
+                  </label>
+                  <label>MIDI:
+                    <select id="midi-select"><option value="">Loading…</option></select>
+                  </label>
+                  <label>Instrument:
                     <div class="select-with-nav">
-                        <label>SoundFont</label>
-                        <select><option>— Select SoundFont —</option></select>
+                      <select id="instrument-select"><option value="-1">Auto (per-channel)</option></select>
+                      <div class="nav-buttons">
+                        <button id="instrument-prev" class="nav-btn" title="Previous Instrument">▲</button>
+                        <button id="instrument-next" class="nav-btn" title="Next Instrument">▼</button>
+                      </div>
                     </div>
+                  </label>
                 </div>
-            </div>
+              </div>
 
-            <div class="viz-container">
-                🎹 🌊 〰️<br>
-                <span id="time-display">0:00 / 0:00</span><br>
-                <em>Ready. Select a SoundFont and MIDI file to begin.</em>
-            </div>
+              <div class="control-row transport">
+                <button id="btn-prev" class="transport-sm" title="Restart / Previous track">⏮</button>
+                <button id="btn-playpause" title="Play">▶</button>
+                <button id="btn-stop" title="Stop" disabled>⏹</button>
+                <button id="btn-next" class="transport-sm" title="Next track">⏭</button>
+                <label class="loop-toggle">
+                  <input type="checkbox" id="chk-loop"> Loop
+                </label>
+              </div>
 
-            <!-- SOUND FONT BUILDER -->
-            <div class="soundfont-builder">
+              <div class="control-row">
+                <label class="slider-label">Tempo:
+                  <input type="range" id="tempo-slider" min="10" max="300" value="100" step="1">
+                  <span id="tempo-value">100%</span>
+                </label>
+                <label class="slider-label">Volume:
+                  <input type="range" id="volume-slider" min="0" max="100" value="80" step="1">
+                  <span id="volume-value">80%</span>
+                </label>
+              </div>
+            </section>
+
+            <section id="progress-section">
+              <div class="viz-toolbar">
+                <button class="viz-toggle active" data-viz="piano" title="Piano keys">🎹</button>
+                <button class="viz-toggle" data-viz="waterfall" title="Note stream">🌊</button>
+                <button class="viz-toggle" data-viz="waveform" title="Waveform">〰️</button>
+              </div>
+              <div class="viz-container">
+                <canvas id="piano-canvas" width="800" height="80"></canvas>
+                <canvas id="waterfall-canvas" width="800" height="200" style="display:none"></canvas>
+                <canvas id="waveform-canvas" width="800" height="120" style="display:none"></canvas>
+              </div>
+              <div id="time-display">
+                <span id="current-time">0:00</span> / <span id="total-time">0:00</span>
+                <span id="voice-count"></span>
+              </div>
+            </section>
+
+            <section id="status">
+              <div id="status-text">Ready. Select a SoundFont and MIDI file to begin.</div>
+            </section>
+
+            <!-- ═══════════ SoundFont Builder ═══════════ -->
+            <section id="sf2-builder">
+              <div class="builder-header" id="builder-toggle">
                 <h2>🔧 SoundFont Builder</h2>
-                <div class="builder-grid">
-                    <div class="available">
-                        <h3>Available SoundFonts</h3>
-                        <p>Loading catalog…</p>
+                <span class="builder-arrow">▸</span>
+              </div>
+              <div class="builder-body" id="builder-body">
+
+                <div class="builder-row">
+                  <div class="builder-sources" id="builder-sources">
+                    <h3>Available SoundFonts</h3>
+                    <div class="builder-hint">Loading catalog…</div>
+                    <div id="sf2-catalog-list" class="catalog-list"></div>
+                  </div>
+                  <div class="builder-selection" id="builder-selection">
+                    <h3>Selected Presets <span id="selection-count">(0)</span></h3>
+                    <div id="selection-list" class="selection-list">
+                      <div class="builder-hint">Select presets from the left to add them here.</div>
                     </div>
-                    <div class="selected">
-                        <h3>Selected Presets (0)</h3>
-                        <p>Select presets from the left to add them here.</p>
-                        <button class="clear-btn">Clear All</button>
-                    </div>
-                    <div class="output">
-                        <h3>Output Settings</h3>
-                        <button class="build-btn">🔨 Build SoundFont</button>
-                    </div>
+                    <button id="btn-clear-selection" class="builder-btn btn-secondary" disabled>Clear All</button>
+                  </div>
                 </div>
-            </div>
+
+                <div class="builder-form">
+                  <h3>Output Settings</h3>
+                  <div class="builder-form-row">
+                    <label>SoundFont Name:
+                      <input type="text" id="sf2-build-name" placeholder="My Custom SoundFont" maxlength="64">
+                    </label>
+                    <label>Filename:
+                      <input type="text" id="sf2-build-filename" placeholder="MyCustom.sf2" maxlength="64">
+                    </label>
+                  </div>
+                  <div class="builder-form-row">
+                    <label>Engineer:
+                      <input type="text" id="sf2-build-engineer" placeholder="(optional)" maxlength="64">
+                    </label>
+                    <label>Copyright:
+                      <input type="text" id="sf2-build-copyright" placeholder="(optional)" maxlength="64">
+                    </label>
+                  </div>
+                  <div class="builder-form-row">
+                    <label class="full-width">Comments:
+                      <input type="text" id="sf2-build-comments" placeholder="(optional)" maxlength="128">
+                    </label>
+                  </div>
+                  <div class="builder-actions">
+                    <label class="overwrite-toggle">
+                      <input type="checkbox" id="sf2-build-overwrite"> Overwrite if exists
+                    </label>
+                    <button id="btn-build-sf2" class="builder-btn btn-primary" disabled>🔨 Build SoundFont</button>
+                  </div>
+                  <div id="build-result" class="build-result"></div>
+                </div>
+
+              </div>
+            </section>
         </div>
 
         <!-- FOOTER -->
@@ -222,15 +300,17 @@
         });
 
         // Play/Pause toggle (visual only)
-        let isPlaying = false;
         const playBtn = document.getElementById('play-pause-btn');
         const led = document.getElementById('play-led');
-        playBtn.addEventListener('click', () => {
-            isPlaying = !isPlaying;
-            playBtn.textContent = isPlaying ? '❚❚' : '▶';
-            led.style.background = isPlaying ? '#33ff33' : '#111';
-            led.style.boxShadow = isPlaying ? '0 0 15px #33ff33' : 'none';
-        });
+        if (playBtn && led) {
+            let isPlaying = false;
+            playBtn.addEventListener('click', () => {
+                isPlaying = !isPlaying;
+                playBtn.textContent = isPlaying ? '❚❚' : '▶';
+                led.style.background = isPlaying ? '#33ff33' : '#111';
+                led.style.boxShadow = isPlaying ? '0 0 15px #33ff33' : 'none';
+            });
+        }
 
         // v3.3 199X BEEP + initial bomb colors
         setTimeout(() => {
@@ -247,6 +327,19 @@
             // init bomb colors
             updateBombColors(document.documentElement.getAttribute('data-theme'));
         }, 420);
+    </script>
+
+    <script>
+        (function() {
+            // Development server serves the compiled bundle as /dist/demo.js
+            // Production (built for Pages) serves demo.js next to index.html (./demo.js)
+            const isDev = location.pathname.startsWith('/src/demo') || location.hostname === 'localhost';
+            const scriptSrc = isDev ? '/dist/demo.js' : './demo.js';
+            const s = document.createElement('script');
+            s.src = scriptSrc;
+            s.defer = true;
+            document.head.appendChild(s);
+        })();
     </script>
 </body>
 </html>
