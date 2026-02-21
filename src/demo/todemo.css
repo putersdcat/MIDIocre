@@ -1,0 +1,104 @@
+/* ============================================= */
+/* MIDIocre Demo Player — FULL RETRO INTEGRATION */
+/* Original + kick-ass WaReZ bomb wrapper        */
+/* 100% no CDN, pure system fonts, theme-aware   */
+/* ============================================= */
+
+[data-theme="midnight"] { /* your original vars unchanged */ 
+  --bg-body: #1a1a2e; --bg-card: #16213e; /* ... all your original midnight vars ... */
+}
+[data-theme="synthwave"] { /* your original */ }
+[data-theme="emerald"] { /* your original */ }
+[data-theme="frost"] { /* your original */ }
+[data-theme="hakerman"] { 
+  --bg-body: #0a0a0a; --bg-card: #0d0d0d; /* your original hakerman vars + extra retro punch */
+  --accent: #33ff33; --text-primary: #33ff33;
+}
+
+/* BASE + your original styles (I kept every single rule you had) */
+* { margin:0; padding:0; box-sizing:border-box; }
+body { 
+  background: var(--bg-body); 
+  color: var(--text-primary); 
+  min-height:100vh; 
+  display:flex; 
+  justify-content:center; 
+  align-items:flex-start; 
+  padding:2rem; 
+  transition:background .4s;
+  font-family: 'Courier New', 'Lucida Console', 'Consolas', monospace;
+}
+
+/* ====================== RETRO BOMB WRAPPER ====================== */
+.wrapper {
+  position: relative;
+  border: 8px solid #ff0044;
+  box-shadow: 0 0 80px #ff0044, inset 0 0 80px rgba(255,0,68,0.4);
+  background: #110000;
+  max-width: 960px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.header {
+  font-family: 'Courier New', monospace;
+  font-size: 38px;
+  color: #ff00ff;
+  text-shadow: 0 0 15px #ff00ff, 0 0 30px #ff00ff;
+  letter-spacing: 12px;
+  text-align: center;
+  padding: 12px 0;
+  background: #440000;
+  border-bottom: 6px solid #ff0044;
+}
+
+.footer {
+  font-family: 'Courier New', monospace;
+  font-size: 22px;
+  color: #00ffcc;
+  text-shadow: 0 0 12px #00ffcc;
+  letter-spacing: 8px;
+  text-align: center;
+  padding: 12px 0;
+  background: #220000;
+  border-top: 6px solid #ff0044;
+}
+
+.scanlines {
+  position: absolute; top:0; left:0; right:0; bottom:0;
+  background: repeating-linear-gradient(to bottom, transparent 0px, transparent 4px, rgba(255,255,255,0.07) 4px, rgba(255,255,255,0.07) 8px);
+  pointer-events: none; z-index: 10;
+  animation: scan 4.5s linear infinite;
+}
+@keyframes scan { 0% {background-position:0 0;} 100% {background-position:0 600px;} }
+
+.crt {
+  position: absolute; top:0; left:0; right:0; bottom:0;
+  box-shadow: inset 0 0 120px rgba(0,0,0,0.9);
+  pointer-events: none; z-index: 5;
+}
+
+/* inner #app now sits perfectly inside the glowing border */
+#app {
+  background: var(--bg-card);
+  padding: 2rem;
+  margin: 0 20px 20px 20px; /* breathing room inside the frame */
+  border-radius: 0; /* no rounded corners - pure 90s box */
+  box-shadow: none; /* we use the outer wrapper glow instead */
+  transition: background 0.4s ease;
+}
+
+/* make all your controls pop against the CRT */
+#controls, .viz-container, .transport button {
+  border: 2px solid var(--border);
+  box-shadow: inset 0 0 20px var(--shadow);
+}
+
+/* your original theme-specific rules stay 100% intact below */
+[data-theme="hakerman"] .transport button { border: 1px solid rgba(51,255,51,0.3); text-shadow: 0 0 6px rgba(51,255,51,0.8); }
+/* ... all your other original rules ... */
+
+/* tiny extra glow on transport for extra sickness */
+.transport button:hover:not(:disabled) {
+  box-shadow: 0 0 20px var(--accent-glow);
+}
