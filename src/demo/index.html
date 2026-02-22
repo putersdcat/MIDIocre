@@ -6,11 +6,8 @@
     <title>MIDIocre Player</title>
     <link rel="stylesheet" href="demo.css">
     <style>
-        /* Tiny override to force pure retro font everywhere (no CDN ever) */
+        /* Tiny override to define app font variable; applied only to wrapper via CSS */
         :root { --app-font: 'Courier New', 'Lucida Console', 'Consolas', monospace; }
-        body, #app, button, select, input {
-            font-family: var(--app-font);
-        }
     </style>
 </head>
 <body>
@@ -18,8 +15,7 @@
         <div class="scanlines"></div>
         <div class="crt"></div>
         <!-- YOUR EDITED RETRO GRAFFITI BOMB HEADER -->
-        <div class="header">| PütersDcat | FULLY CRACKED |
-        </div>
+        <div class="header">PütersDcat - FULLY CRACKED</div>
         
         <svg id="bomb-svg" class="bomb-svg" width="920" height="480" viewBox="0 0 920 480" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -230,7 +226,7 @@
     </section>
         </div>
 
-        <div class="footer">Mediocre by name, excellent by implementation. //PDC|Cld46Op|RaptrMin|GrokC1|Grok\</div>
+        <div class="footer">Mediocre by name, excellent by implementation. PDC|Cld46Op|RaptrMin|GrokC1|Grok</div>
     </div>
 
     <script>
