@@ -546,6 +546,8 @@ function initThemes(): void {
         link = document.createElement('link');
         link.id = 'google-font-link';
         link.rel = 'stylesheet';
+        // allow cross-origin for ORB-safe loading
+        link.crossOrigin = 'anonymous';
         document.head.appendChild(link);
       }
       const fam = font.replace(/ /g, '+');
