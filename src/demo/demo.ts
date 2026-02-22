@@ -480,6 +480,57 @@ class WaveformCanvas {
 
 // -- Theme management --------------------------------------------------------
 
+// mapping used to recolor the graffiti bomb gradient and bricks
+const themeBombColors: Record<string, {
+  brick: string;
+  brickDark: string;
+  brickLine: string;
+  graffiti: string[];
+}> = {
+  midnight: {
+    brick: '#aa0000', brickDark: '#660000', brickLine: '#440000',
+    graffiti: ['#ff88ff','#ff44cc','#aa00ff','#ff2288','#8800cc'],
+  },
+  synthwave: {
+    brick: '#cc0044', brickDark: '#770022', brickLine: '#550011',
+    graffiti: ['#ff00ff','#00ffff','#ff44ff','#00ffcc','#ff88ff'],
+  },
+  emerald: {
+    brick: '#008822', brickDark: '#004411', brickLine: '#002200',
+    graffiti: ['#00ff88','#00cc66','#44ffaa','#00ff44','#88ffcc'],
+  },
+  frost: {
+    brick: '#4477aa', brickDark: '#223355', brickLine: '#112244',
+    graffiti: ['#88ddff','#44aaff','#77ccff','#aaddff','#ccffff'],
+  },
+  hakerman: {
+    brick: '#114411', brickDark: '#002200', brickLine: '#001100',
+    graffiti: ['#00ff44','#33ff88','#66ffaa','#99ffcc','#ccffdd'],
+  }
+};
+
+function updateBombColors(theme: string): void {
+  const colors = themeBombColors[theme] || themeBombColors.hakerman;
+  // brick rectangles
+  const bgRect = document.getElementById('brick-bg');
+  const line1 = document.getElementById('brick-line1');
+  const line2 = document.getElementById('brick-line2');
+  if (bgRect) bgRect.setAttribute('fill', colors.brick);
+  if (line1) line1.setAttribute('fill', colors.brickDark);
+  if (line2) line2.setAttribute('fill', colors.brickDark);
+  // graffiti gradient stops
+  const stops = [
+    document.getElementById('g-stop1'),
+    document.getElementById('g-stop2'),
+    document.getElementById('g-stop3'),
+    document.getElementById('g-stop4'),
+    document.getElementById('g-stop5'),
+  ];
+  colors.graffiti.forEach((col, i) => {
+    if (stops[i]) stops[i].setAttribute('stop-color', col);
+  });
+}
+
 function initThemes(): void {
   const buttons = document.querySelectorAll<HTMLButtonElement>('.theme-btn');
   const root = document.documentElement;
@@ -491,6 +542,8 @@ function initThemes(): void {
       root.dataset.theme = theme;
       buttons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      // bomb color update
+      updateBombColors(theme);
       // Persist in localStorage
       try { localStorage.setItem('midiocre-theme', theme); } catch { /* ok */ }
     });
@@ -504,6 +557,10 @@ function initThemes(): void {
       buttons.forEach(b => {
         b.classList.toggle('active', b.dataset.theme === saved);
       });
+      updateBombColors(saved);
+    } else {
+      // default theme
+      updateBombColors(root.dataset.theme || 'hakerman');
     }
   } catch { /* ok */ }
 }
@@ -1204,7 +1261,27 @@ async function init(): Promise<void> {
   // -- Start --
   await loadDefaultAssets();
   updateTransportButtons('stopped');
-}
+
+  // play an authentic 199X square-wave beep after a short delay
+  setTimeout(() => {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'square';
+      o.frequency.setValueAtTime(220, ctx.currentTime);
+      g.gain.value = 0.12;
+      o.connect(g); g.connect(ctx.destination);
+      o.start();
+      setTimeout(() => o.stop(), 120);
+    } catch (e) {
+      // audio may be blocked by autoplay policies
+      console.warn('Retro beep failed', e);
+    }
+    // flag for tests (always set)
+    (window as any).__retroBeepPlayed = true;
+  }, 420);
+} 
 
 // DOM ready
 if (document.readyState === 'loading') {

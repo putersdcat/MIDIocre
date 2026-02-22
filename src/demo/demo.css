@@ -887,6 +887,29 @@ header .tagline {
 }
 
 /* ====================== RETRO BOMB WRAPPER ====================== */
+.bomb-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 30px #00ffff);
+}
+
+/* optional spark/flame animations if elements present */
+.spark {
+  animation: fuseSpark 0.65s ease-in-out infinite alternate;
+}
+@keyframes fuseSpark {
+  0% { opacity:0.3; transform:scale(0.6); }
+  100% { opacity:1; transform:scale(1.4); }
+}
+#flame {
+  animation: flameFlicker 0.12s linear infinite alternate;
+}
+@keyframes flameFlicker {
+  0% { ry:18; rx:9; opacity:0.85; }
+  100% { ry:22; rx:11; opacity:1; }
+}
+
 .wrapper {
   position: relative;
   border: 8px solid #ff0044;
