@@ -538,6 +538,7 @@ function initThemes(): void {
   // font selector logic (temporary dev tool)
   const fontSelect = document.getElementById('font-select') as HTMLSelectElement | null;
   function applyFont(font: string | null) {
+    const wrapper = document.querySelector('.wrapper') as HTMLElement | null;
     if (font) {
       // ensure link exists
       let link = document.getElementById('google-font-link') as HTMLLinkElement | null;
@@ -549,9 +550,9 @@ function initThemes(): void {
       }
       const fam = font.replace(/ /g, '+');
       link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fam)}&display=swap`;
-      document.body.style.fontFamily = `'${font}', 'Courier New', 'Lucida Console', 'Consolas', monospace`;
+      if (wrapper) wrapper.style.fontFamily = `'${font}', 'Courier New', 'Lucida Console', 'Consolas', monospace`;
     } else {
-      document.body.style.fontFamily = `'Courier New', 'Lucida Console', 'Consolas', monospace`;
+      if (wrapper) wrapper.style.fontFamily = '';
     }
     try { localStorage.setItem('midiocre-font', font || ''); } catch {}
   }
