@@ -7,8 +7,9 @@
     <link rel="stylesheet" href="demo.css">
     <style>
         /* Tiny override to force pure retro font everywhere (no CDN ever) */
+        :root { --app-font: 'Courier New', 'Lucida Console', 'Consolas', monospace; }
         body, #app, button, select, input {
-            font-family: 'Courier New', 'Lucida Console', 'Consolas', monospace !important;
+            font-family: var(--app-font);
         }
     </style>
 </head>
@@ -79,6 +80,15 @@
             <header>
                 <div class="header-controls">
                     <div class="theme-picker">
+                        <label for="font-select">Font:</label>
+                        <select id="font-select">
+                            <option value="">System</option>
+                            <option value="Sedgwick Ave">Sedgwick Ave</option>
+                            <option value="Wallpoet">Wallpoet</option>
+                            <option value="Permanent Marker">Permanent Marker</option>
+                            <option value="Rock Salt">Rock Salt</option>
+                            <option value="Calligraffitti">Calligraffitti</option>
+                        </select>
                         <button class="theme-btn" data-theme="midnight">🌙</button>
                         <button class="theme-btn" data-theme="synthwave">🌆</button>
                         <button class="theme-btn" data-theme="emerald">🌲</button>

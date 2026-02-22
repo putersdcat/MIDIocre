@@ -218,10 +218,27 @@ header .tagline {
 .theme-picker {
   display: flex;
   gap: 4px;
+  align-items: center;
   background: var(--bg-input);
   border-radius: 8px;
   padding: 3px;
   transition: background 0.3s ease;
+}
+
+#font-select {
+  font-family: inherit;
+  padding: 2px 4px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-right: 6px;
+}
+
+.theme-picker label[for="font-select"] {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-right: 4px;
 }
 
 .theme-btn {

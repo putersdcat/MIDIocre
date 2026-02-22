@@ -535,6 +535,40 @@ function initThemes(): void {
   const buttons = document.querySelectorAll<HTMLButtonElement>('.theme-btn');
   const root = document.documentElement;
 
+  // font selector logic (temporary dev tool)
+  const fontSelect = document.getElementById('font-select') as HTMLSelectElement | null;
+  function applyFont(font: string | null) {
+    if (font) {
+      // ensure link exists
+      let link = document.getElementById('google-font-link') as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement('link');
+        link.id = 'google-font-link';
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+      }
+      const fam = font.replace(/ /g, '+');
+      link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fam)}&display=swap`;
+      document.body.style.fontFamily = `'${font}', 'Courier New', 'Lucida Console', 'Consolas', monospace`;
+    } else {
+      document.body.style.fontFamily = `'Courier New', 'Lucida Console', 'Consolas', monospace`;
+    }
+    try { localStorage.setItem('midiocre-font', font || ''); } catch {}
+  }
+  if (fontSelect) {
+    fontSelect.addEventListener('change', () => {
+      applyFont(fontSelect.value || null);
+    });
+    // restore
+    try {
+      const savedFont = localStorage.getItem('midiocre-font');
+      if (savedFont) {
+        fontSelect.value = savedFont;
+        applyFont(savedFont);
+      }
+    } catch {}
+  }
+
   buttons.forEach(btn => {
     btn.addEventListener('click', () => {
       const theme = btn.dataset.theme;
