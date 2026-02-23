@@ -17,6 +17,8 @@
     "build:demo": "node scripts/build-demo.mjs",
     "build:cli": "esbuild src/cli/sf2cli.ts --bundle --platform=node --format=esm --outfile=dist/cli/sf2cli.mjs --sourcemap --banner:js=\"#!/usr/bin/env node\"",
     "dev": "node scripts/dev-server.mjs",
+    "readme:screenshots": "node --loader ts-node/esm scripts/take-screenshots.ts",
+    "readme:slideshow": "node --loader ts-node/esm scripts/make-readme-slideshow.ts",
     "typecheck": "tsc --noEmit",
     "cli": "node dist/cli/sf2cli.mjs"
   },
@@ -26,6 +28,7 @@
     "esbuild": "^0.20.0",
     "playwright": "^1.58.2",
     "sharp": "^0.34.5",
+    "ts-node": "^10.9.1",
     "typescript": "^5.4.0"
   },
   "files": [

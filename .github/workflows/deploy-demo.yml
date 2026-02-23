@@ -26,6 +26,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Install gifsicle (for GIF creation)
+        run: sudo apt-get update && sudo apt-get install -y gifsicle
+
       - name: Build (library + demo + CLI)
         run: npm run build --if-present
 
