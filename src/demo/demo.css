@@ -1,6 +1,10 @@
-/* Midiocre Demo Player — Styles with Theme Support */
+/* ============================================= */
+/* MIDIocre Demo Player — FULL RETRO INTEGRATION */
+/* Original + kick-ass WaReZ bomb wrapper        */
+/* 100% no CDN, pure system fonts, theme-aware   */
+/* ============================================= */
 
-/* ═══════════════════════ THEME VARIABLES ═══════════════════════ */
+/* ───────────────── THEME VARIABLES (from original) ───────────────── */
 
 [data-theme="midnight"] {
   --bg-body: #1a1a2e;
@@ -163,6 +167,7 @@
 }
 
 body {
+  /* force system font for the inner app canvas */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
   background: var(--bg-body);
   color: var(--text-primary);
@@ -174,7 +179,14 @@ body {
   transition: background 0.4s ease;
 }
 
+/* wrapper (outer visual border) may use chosen font */
+.wrapper {
+  font-family: var(--app-font);
+}
+
 #app {
+  /* always use system font inside the playable area */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif !important;
   max-width: 900px;
   width: 100%;
   background: var(--bg-card);
@@ -214,10 +226,38 @@ header .tagline {
 .theme-picker {
   display: flex;
   gap: 4px;
+  align-items: center;
   background: var(--bg-input);
   border-radius: 8px;
   padding: 3px;
   transition: background 0.3s ease;
+}
+
+#font-select {
+  font-family: inherit;
+  padding: 2px 4px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-right: 6px;
+}
+
+/* font-selector-row is a transparent layout wrapper; hidden via font-picker-hidden on parent */
+#font-selector-row {
+  display: contents;
+}
+
+/* hide the font selector + its label when showFontSelector=false in config */
+.font-picker-hidden #font-selector-row,
+.font-picker-hidden label[for="font-select"] {
+  display: none !important;
+}
+
+.theme-picker label[for="font-select"] {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-right: 4px;
 }
 
 .theme-btn {
@@ -880,4 +920,101 @@ header .tagline {
   background: var(--accent-dim);
   color: var(--text-primary);
   border: 1px solid var(--accent);
+}
+
+/* ====================== RETRO BOMB WRAPPER ====================== */
+.bomb-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 30px #00ffff);
+}
+
+/* optional spark/flame animations if elements present */
+.spark {
+  animation: fuseSpark 0.65s ease-in-out infinite alternate;
+}
+@keyframes fuseSpark {
+  0% { opacity:0.3; transform:scale(0.6); }
+  100% { opacity:1; transform:scale(1.4); }
+}
+#flame {
+  animation: flameFlicker 0.12s linear infinite alternate;
+}
+@keyframes flameFlicker {
+  0% { ry:18; rx:9; opacity:0.85; }
+  100% { ry:22; rx:11; opacity:1; }
+}
+
+.wrapper {
+  position: relative;
+  border: 8px solid #ff0044;
+  box-shadow: 0 0 80px #ff0044, inset 0 0 80px rgba(255,0,68,0.4);
+  background: #110000;
+  max-width: 960px;
+  width: 100%;
+  overflow: hidden;
+  font-family: var(--app-font); /* maintain custom font */
+}
+
+.header {
+  position: relative;          /* make overlay elements absolute to header */
+  font-family: 'Courier New', monospace;
+  font-size: 38px;
+  color: #ff00ff;
+  text-shadow: 0 0 15px #ff00ff, 0 0 30px #ff00ff;
+  letter-spacing: 12px;
+  text-align: center;
+  padding: 12px 0;
+  background: #440000;
+  border-bottom: 6px solid #ff0044;
+}
+
+.footer {
+  font-family: 'Courier New', monospace;
+  font-size: 22px;
+  color: #00ffcc;
+  text-shadow: 0 0 12px #00ffcc;
+  letter-spacing: 8px;
+  text-align: center;
+  padding: 12px 0;
+  background: #220000;
+  border-top: 6px solid #ff0044;
+}
+
+/* overlay the wrapper but sit beneath the core player */
+.wrapper .scanlines {
+  position: absolute; top:0; left:0; right:0; bottom:0;
+  background: repeating-linear-gradient(to bottom, transparent 0px, transparent 4px, rgba(255,255,255,0.07) 4px, rgba(255,255,255,0.07) 8px);
+  pointer-events: none; z-index: 1;
+  animation: scan 4.5s linear infinite;
+}
+@keyframes scan { 0% {background-position:0 0;} 100% {background-position:0 600px;} }
+
+.wrapper .crt {
+  position: absolute; top:0; left:0; right:0; bottom:0;
+  box-shadow: inset 0 0 120px rgba(0,0,0,0.9);
+  pointer-events: none; z-index: 1;
+}
+
+/* inner #app now sits perfectly inside the glowing border */
+#app {
+  position: relative;
+  z-index: 2;
+  background: var(--bg-card);
+  padding: 2rem;
+  margin: 0 20px 20px 20px; /* breathing room inside the frame */
+  border-radius: 0; /* no rounded corners - pure 90s box */
+  box-shadow: none; /* we use the outer wrapper glow instead */
+  transition: background 0.4s ease;
+}
+
+/* make all your controls pop against the CRT */
+#controls, .viz-container, .transport button {
+  border: 2px solid var(--border);
+  box-shadow: inset 0 0 20px var(--shadow);
+}
+
+.transport button:hover:not(:disabled) {
+  box-shadow: 0 0 20px var(--accent-glow);
 }

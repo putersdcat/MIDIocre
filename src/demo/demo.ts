@@ -480,9 +480,153 @@ class WaveformCanvas {
 
 // -- Theme management --------------------------------------------------------
 
+// mapping used to recolor the graffiti bomb gradient and bricks
+const themeBombColors: Record<string, {
+  brick: string;
+  brickDark: string;
+  brickLine: string;
+  graffiti: string[];  // 5 gradient stop colours
+  fillStroke: string;  // inner outline on neon-fill layer
+  shineOpacity: string;
+  outlineStroke: string; // colour of the thick outer border
+  outlineGlow: string;   // feDropShadow flood-color driving the outer glow
+}> = {
+  midnight: {
+    // Bruised neon — deep crimson bricks, electric red/violet/pink
+    brick: '#990000', brickDark: '#550000', brickLine: '#330000',
+    graffiti: ['#ff3355', '#cc00ff', '#ff88bb', '#7700ee', '#ff0066'],
+    fillStroke: '#220011', shineOpacity: '0.30',
+    outlineStroke: '#330000', outlineGlow: '#ff3355',
+  },
+  synthwave: {
+    // 80s blaze — hot magenta/cyan/purple
+    brick: '#bb0044', brickDark: '#660022', brickLine: '#440011',
+    graffiti: ['#ff2975', '#00f5ff', '#ff79c6', '#bd93f9', '#ff00cc'],
+    fillStroke: '#110022', shineOpacity: '0.40',
+    outlineStroke: '#220033', outlineGlow: '#ff2975',
+  },
+  emerald: {
+    // Neon jungle — forest brick, electric green/gold/teal
+    brick: '#004d11', brickDark: '#002800', brickLine: '#001400',
+    graffiti: ['#00ff88', '#ffe000', '#00ffcc', '#88ff00', '#ff9900'],
+    fillStroke: '#001a00', shineOpacity: '0.30',
+    outlineStroke: '#001a00', outlineGlow: '#00ff88',
+  },
+  frost: {
+    // Frozen neon — navy brick, sapphire/ice/violet
+    brick: '#2255aa', brickDark: '#112255', brickLine: '#0a1a44',
+    graffiti: ['#44aaff', '#aa66ff', '#00ddff', '#2277ee', '#88ccff'],
+    fillStroke: '#001133', shineOpacity: '0.45',
+    outlineStroke: '#0a1a44', outlineGlow: '#44aaff',
+  },
+  hakerman: {
+    // RETRO PHOSPHOR on void-black — mix CRT green, amber, red plasma, blue-white
+    // Classic green phosphor #39ff14, amber CRT #ffb000, red plasma #ff3300,
+    // blue-white CRT phosphor #c8f0ff, warm white #fff5cc
+    brick: '#0a1a00', brickDark: '#040d00', brickLine: '#020800',
+    graffiti: ['#39ff14', '#ffb000', '#ff3300', '#c8f0ff', '#fff5cc'],
+    fillStroke: '#001100', shineOpacity: '0.35',
+    outlineStroke: '#002200', outlineGlow: '#39ff14',
+  },
+};
+
+function updateBombColors(theme: string): void {
+  const colors = themeBombColors[theme] || themeBombColors.hakerman;
+  // brick pattern
+  const bgRect = document.getElementById('brick-bg');
+  const line1  = document.getElementById('brick-line1');
+  const line2  = document.getElementById('brick-line2');
+  if (bgRect) bgRect.setAttribute('fill', colors.brick);
+  if (line1)  line1.setAttribute('fill', colors.brickDark);
+  if (line2)  line2.setAttribute('fill', colors.brickDark);
+  // graffiti gradient stops
+  const stops = [
+    document.getElementById('g-stop1'),
+    document.getElementById('g-stop2'),
+    document.getElementById('g-stop3'),
+    document.getElementById('g-stop4'),
+    document.getElementById('g-stop5'),
+  ];
+  colors.graffiti.forEach((col, i) => {
+    if (stops[i]) stops[i]!.setAttribute('stop-color', col);
+  });
+  // inner stroke + shine on fill/highlight layers
+  const fillText  = document.getElementById('bomb-fill');
+  const shineText = document.getElementById('bomb-shine');
+  if (fillText)  fillText.setAttribute('stroke', colors.fillStroke);
+  if (shineText) shineText.setAttribute('opacity', colors.shineOpacity);
+  // outer outline stroke + drop-shadow glow colour
+  const outlineText = document.getElementById('bomb-outline');
+  const dropShadow  = document.getElementById('bomb-dropshadow');
+  if (outlineText) {
+    outlineText.setAttribute('stroke', colors.outlineStroke);
+    outlineText.setAttribute('fill',   colors.outlineStroke);
+  }
+  if (dropShadow) dropShadow.setAttribute('flood-color', colors.outlineGlow);
+}
+
 function initThemes(): void {
   const buttons = document.querySelectorAll<HTMLButtonElement>('.theme-btn');
   const root = document.documentElement;
+
+  // font selector logic (temporary dev tool) — targets OUTER chrome only, #app is untouched
+  const fontSelect = document.getElementById('font-select') as HTMLSelectElement | null;
+  function applyFont(font: string | null) {
+    // Elements outside #app that we want the graffiti font to hit
+    const headerEl  = document.querySelector<HTMLElement>('.wrapper > .header');
+    const footerEl  = document.querySelector<HTMLElement>('.wrapper > .footer');
+    // SVG text nodes: big logo (3 layers) + signature + tiny tag
+    const svgTexts  = document.querySelectorAll<SVGTextElement>('#bomb-svg text');
+
+    const fallbackStack = `'Courier New', 'Lucida Console', 'Consolas', monospace`;
+    // The big logo uses Impact by default; signature/tag use Courier New — we'll unify
+    // them all to the chosen font so the full outer frame looks consistent.
+    const logoFallback = `Impact, Arial Black, sans-serif`;
+
+    if (font) {
+      // Inject / update Google Fonts <link>
+      let link = document.getElementById('google-font-link') as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement('link');
+        link.id = 'google-font-link';
+        link.rel = 'stylesheet';
+        link.crossOrigin = 'anonymous';
+        document.head.appendChild(link);
+      }
+      // encodeURIComponent handles spaces as %20 which Google Fonts accepts;
+      // do NOT pre-replace spaces with + then encodeURIComponent — that double-encodes to %2B and breaks the URL
+      link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}&display=swap`;
+
+      const stack = `'${font}', ${fallbackStack}`;
+      if (headerEl) headerEl.style.fontFamily = stack;
+      if (footerEl) footerEl.style.fontFamily = stack;
+      // SVG font-family is an attribute — CSS vars / inheritance don't override it
+      svgTexts.forEach(t => t.setAttribute('font-family', `'${font}', ${logoFallback}`));
+    } else {
+      // Revert to originals
+      if (headerEl) headerEl.style.fontFamily = '';
+      if (footerEl) footerEl.style.fontFamily = '';
+      // Restore big-logo texts to Impact, signature/tag to Courier New
+      svgTexts.forEach((t, i) => {
+        // first 3 are the MIDIocre logo stacks, last 2 are signature / tiny-tag
+        t.setAttribute('font-family', i < 3 ? logoFallback : 'Courier New, monospace');
+      });
+    }
+    try { localStorage.setItem('midiocre-font', font || ''); } catch {}
+  }
+  if (fontSelect) {
+    fontSelect.addEventListener('change', () => {
+      applyFont(fontSelect.value || null);
+    });
+    // restore
+    try {
+      const savedFont = localStorage.getItem('midiocre-font');
+      if (savedFont) {
+        fontSelect.value = savedFont;
+        applyFont(savedFont);
+      }
+    } catch {}
+  }
 
   buttons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -491,6 +635,8 @@ function initThemes(): void {
       root.dataset.theme = theme;
       buttons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      // bomb color update
+      updateBombColors(theme);
       // Persist in localStorage
       try { localStorage.setItem('midiocre-theme', theme); } catch { /* ok */ }
     });
@@ -504,6 +650,10 @@ function initThemes(): void {
       buttons.forEach(b => {
         b.classList.toggle('active', b.dataset.theme === saved);
       });
+      updateBombColors(saved);
+    } else {
+      // default theme
+      updateBombColors(root.dataset.theme || 'hakerman');
     }
   } catch { /* ok */ }
 }
@@ -659,6 +809,39 @@ async function init(): Promise<void> {
 
   // -- Theme + Viz init --
   initThemes();
+
+  // -- Font selector visibility + default font application --
+  const showFontUI = (config as any).showFontSelector ?? false;
+  const themePicker = document.querySelector<HTMLElement>('.theme-picker');
+  if (!showFontUI && themePicker) themePicker.classList.add('font-picker-hidden');
+
+  // Apply default font: honour localStorage first, then fall back to Sedgwick Ave Display
+  const fontSelectEl = document.getElementById('font-select') as HTMLSelectElement | null;
+  const savedFont = (() => { try { return localStorage.getItem('midiocre-font'); } catch { return null; } })();
+  const defaultFont = savedFont || 'Sedgwick Ave Display';
+  if (fontSelectEl) fontSelectEl.value = defaultFont;
+  // Inline the font application here so it works regardless of selector visibility
+  (() => {
+    const headerEl = document.querySelector<HTMLElement>('.wrapper > .header');
+    const footerEl = document.querySelector<HTMLElement>('.wrapper > .footer');
+    const svgTexts = document.querySelectorAll<SVGTextElement>('#bomb-svg text');
+    const logoFallback = 'Impact, Arial Black, sans-serif';
+    const stack = `'${defaultFont}', 'Sedgwick Ave', 'Courier New', monospace`;
+    if (headerEl) headerEl.style.fontFamily = stack;
+    if (footerEl) footerEl.style.fontFamily = stack;
+    svgTexts.forEach((t, i) => {
+      t.setAttribute('font-family', i < 3 ? `'${defaultFont}', ${logoFallback}` : `'${defaultFont}', 'Courier New', monospace`);
+    });
+    // Ensure Google Fonts link is live for the default (preloaded in <head> but belt-and-suspenders)
+    if (!document.getElementById('google-font-link')) {
+      const link = document.createElement('link');
+      link.id = 'google-font-link';
+      link.rel = 'stylesheet';
+      link.crossOrigin = 'anonymous';
+      link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(defaultFont)}&display=swap`;
+      document.head.appendChild(link);
+    }
+  })();
   initVizToggle((mode) => {
     currentViz = mode;
     // Manage animation loops based on active viz
@@ -1204,7 +1387,27 @@ async function init(): Promise<void> {
   // -- Start --
   await loadDefaultAssets();
   updateTransportButtons('stopped');
-}
+
+  // play an authentic 199X square-wave beep after a short delay
+  setTimeout(() => {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'square';
+      o.frequency.setValueAtTime(220, ctx.currentTime);
+      g.gain.value = 0.12;
+      o.connect(g); g.connect(ctx.destination);
+      o.start();
+      setTimeout(() => o.stop(), 120);
+    } catch (e) {
+      // audio may be blocked by autoplay policies
+      console.warn('Retro beep failed', e);
+    }
+    // flag for tests (always set)
+    (window as any).__retroBeepPlayed = true;
+  }, 420);
+} 
 
 // DOM ready
 if (document.readyState === 'loading') {
