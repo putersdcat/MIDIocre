@@ -8,7 +8,7 @@ Note: this project was prompted into existence in about two hours to support ano
 
 [Live demo (GitHub Pages) — https://putersdcat.github.io/MIDIocre/](https://putersdcat.github.io/MIDIocre/)
 
-[![Midiocre demo slideshow](assets/readme-slideshow.gif)](https://putersdcat.github.io/MIDIocre/)
+[![Midiocre demo slideshow](https://putersdcat.github.io/MIDIocre/assets/readme-slideshow.gif)](https://putersdcat.github.io/MIDIocre/)
 
 The demo is published automatically by the `.github/workflows/deploy-demo.yml` workflow.
 
