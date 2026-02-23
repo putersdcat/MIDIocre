@@ -273,10 +273,13 @@ async function processImages(args: Args): Promise<void> {
       await fs.mkdir(tempDir, { recursive: true });
 
       frameFiles = [];
+      // Convert frames to GIF format (gifsicle expects GIF input). Use sharp
+      // to convert the PNG buffers into single-frame GIF files.
       for (let i = 0; i < finalFrames.length; i++) {
-        const frameFile = join(tempDir, `frame_${i.toString().padStart(3, '0')}.png`);
-        await fs.writeFile(frameFile, finalFrames[i]);
-        frameFiles.push(frameFile);
+        const gifFrameFile = join(tempDir, `frame_${i.toString().padStart(3, '0')}.gif`);
+        // Ensure frame buffer is in a format sharp can read (PNG buffer)
+        await sharp(finalFrames[i]).gif().toFile(gifFrameFile);
+        frameFiles.push(gifFrameFile);
       }
 
       // Try to use gifsicle to create animated GIF. If gifsicle cannot accept
