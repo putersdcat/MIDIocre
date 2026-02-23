@@ -243,6 +243,17 @@ header .tagline {
   margin-right: 6px;
 }
 
+/* font-selector-row is a transparent layout wrapper; hidden via font-picker-hidden on parent */
+#font-selector-row {
+  display: contents;
+}
+
+/* hide the font selector + its label when showFontSelector=false in config */
+.font-picker-hidden #font-selector-row,
+.font-picker-hidden label[for="font-select"] {
+  display: none !important;
+}
+
 .theme-picker label[for="font-select"] {
   font-size: 0.9rem;
   color: var(--text-secondary);

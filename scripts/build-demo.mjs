@@ -38,6 +38,7 @@ for (const file of staticFiles) {
       cfg.enableSF2Builder = true;
       cfg.sf2Path = 'SoundFonts';
       cfg.midiPath = 'DemoMidiFiles';
+      cfg.showFontSelector = false;  // hide dev-only font picker on GitHub Pages
       writeFileSync(dest, JSON.stringify(cfg, null, 2), 'utf8');
       continue;
     } catch (err) {
