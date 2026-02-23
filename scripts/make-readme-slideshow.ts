@@ -336,8 +336,42 @@ async function processImages(args: Args): Promise<void> {
 
           console.log(`Created animated GIF with ImageMagick convert: ${gif} (${finalFrames.length} frames)`);
         } catch (convErr) {
-          console.log('ImageMagick convert not available or failed, skipping GIF creation');
-          console.log('To create animated GIF, install gifsicle or imagemagick: apt install gifsicle imagemagick');
+          console.log('ImageMagick convert not available or failed, attempting pure-Node fallback...');
+
+          // Pure-Node fallback using gifencoder and sharp. This avoids system
+          // dependencies like ImageMagick/gifsicle. We attempt to require
+          // gifencoder at runtime; if not installed, we log and skip.
+          try {
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const GIFEncoder = require('gifencoder');
+            const nodeFs = await import('fs');
+
+            // Determine frame size from the first frame
+            const firstMeta = await sharp(frameFiles[0]).metadata();
+            const w = firstMeta.width!;
+            const h = firstMeta.height!;
+
+            const encoder = new GIFEncoder(w, h);
+            const outStream = nodeFs.createWriteStream(gif);
+            encoder.createReadStream().pipe(outStream);
+            encoder.start();
+            encoder.setRepeat(0);
+            encoder.setDelay(args.duration || 800);
+            encoder.setQuality(10);
+
+            for (const f of frameFiles) {
+              const { data } = await sharp(f).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+              // gifencoder expects raw RGBA buffer
+              encoder.addFrame(data);
+            }
+
+            encoder.finish();
+            await new Promise<void>((resolve) => outStream.on('close', () => resolve()));
+            console.log(`Created animated GIF with gifencoder: ${gif} (${finalFrames.length} frames)`);
+          } catch (nodeErr) {
+            console.log('Pure-Node GIF encoder not available or failed, skipping GIF creation', nodeErr);
+            console.log('To enable pure-Node GIF creation, install the dev dependency: npm install --save-dev gifencoder');
+          }
         }
       }
     } catch (err) {
