@@ -51,6 +51,16 @@ jobs:
           echo "Contents of dist/demo:" && ls -la dist/demo || true
           echo "Generated assets:" && ls -la assets/ || true
 
+      - name: Copy readme GIF into demo dist
+        run: |
+          if [ -f assets/readme-slideshow.gif ]; then
+            mkdir -p dist/demo/assets
+            cp assets/readme-slideshow.gif dist/demo/assets/
+            echo "Copied assets/readme-slideshow.gif -> dist/demo/assets/readme-slideshow.gif"
+          else
+            echo "No GIF found at assets/readme-slideshow.gif; skipping copy"
+          fi
+
       - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v4
         with:
