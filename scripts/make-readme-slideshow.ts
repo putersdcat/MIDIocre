@@ -279,30 +279,67 @@ async function processImages(args: Args): Promise<void> {
         frameFiles.push(frameFile);
       }
 
-      // Try to use gifsicle to create animated GIF
-      await new Promise<void>((resolve, reject) => {
-        const gifsicle = spawn('gifsicle', [
-          '--delay', args.duration.toString(),
-          '--loop',
-          '--optimize=3',
-          ...frameFiles,
-          '--output', gif
-        ], { stdio: 'inherit' });
+      // Try to use gifsicle to create animated GIF. If gifsicle cannot accept
+      // PNG inputs on the runner, fall back to ImageMagick `convert` which can
+      // build a GIF from PNG frames.
+      try {
+        await new Promise<void>((resolve, reject) => {
+          const gifsicle = spawn('gifsicle', [
+            '--delay', args.duration.toString(),
+            '--loop',
+            '--optimize=3',
+            ...frameFiles,
+            '--output', gif
+          ], { stdio: 'inherit' });
 
-        gifsicle.on('close', (code) => {
-          if (code === 0) {
-            resolve();
-          } else {
-            reject(new Error(`gifsicle exited with code ${code}`));
-          }
+          gifsicle.on('close', (code) => {
+            if (code === 0) {
+              resolve();
+            } else {
+              reject(new Error(`gifsicle exited with code ${code}`));
+            }
+          });
+
+          gifsicle.on('error', (err) => {
+            reject(err);
+          });
         });
 
-        gifsicle.on('error', (err) => {
-          reject(err);
-        });
-      });
+        console.log(`Created animated GIF with gifsicle: ${gif} (${finalFrames.length} frames)`);
+      } catch (gErr) {
+        console.log('gifsicle failed or cannot accept PNG frames, attempting ImageMagick convert fallback...', gErr);
 
-      console.log(`Created animated GIF with gifsicle: ${gif} (${finalFrames.length} frames)`);
+        try {
+          // ImageMagick `convert` -delay uses 1/100ths of a second, so convert
+          // ms -> centiseconds
+          const delayCs = Math.max(1, Math.round((args.duration || 800) / 10));
+          await new Promise<void>((resolve, reject) => {
+            const convert = spawn('convert', [
+              '-delay', String(delayCs),
+              '-loop', '0',
+              ...frameFiles,
+              gif
+            ], { stdio: 'inherit' });
+
+            convert.on('close', (code) => {
+              if (code === 0) {
+                resolve();
+              } else {
+                reject(new Error(`convert exited with code ${code}`));
+              }
+            });
+
+            convert.on('error', (err) => {
+              reject(err);
+            });
+          });
+
+          console.log(`Created animated GIF with ImageMagick convert: ${gif} (${finalFrames.length} frames)`);
+        } catch (convErr) {
+          console.log('ImageMagick convert not available or failed, skipping GIF creation');
+          console.log('To create animated GIF, install gifsicle or imagemagick: apt install gifsicle imagemagick');
+        }
+      }
     } catch (err) {
       console.log('gifsicle not available or failed, skipping GIF creation');
       console.log('To create animated GIF, install gifsicle: choco install gifsicle (Windows) or apt install gifsicle (Linux/Mac)');
